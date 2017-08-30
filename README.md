@@ -37,8 +37,8 @@ const config = {
 }
 ```
 
-** Note that you can't override `output.path` options, in order to avoid inconsistency.**
-Use `from` and `to` options instead if you want the native module to be put elsewhere.
+**Note that you can't override `output.path` options, in order to avoid inconsistencies.**
+Use `from` and `to` options instead if you want the native modules to be put elsewhere.
 
 ### `from` defaults to output dir
 
