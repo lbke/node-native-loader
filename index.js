@@ -7,17 +7,12 @@ module.exports = function process(content) {
   }
 
   const query = loaderUtils.getOptions(this) || {};
-  const configKey = query.config || "nodeNativeLoader";
-  const options = this.options[configKey] || {};
 
   const config = {
-    name: "[hash].[ext]"
+    name: "[hash].[ext]",
+    // default is the webpack output path
+    from: this.options.output.path,
   };
-
-  // options takes precedence over config
-  Object.keys(options).forEach(function(attr) {
-    config[attr] = options[attr];
-  });
 
   // query takes precedence over config and options
   Object.keys(query).forEach(function(attr) {
@@ -29,9 +24,10 @@ module.exports = function process(content) {
     content,
   })
   outfile = outfile.replace(/[\\/]/g, '_')
+  outfile = config.to ? path.join(config.to, outfile) : outfile
   this.emitFile(outfile, content)
-  let relativePath = config.from ?
-      path.relative(config.from, path.resolve(this.options.output.path, outfile)) : outfile
+  let relativePath = 
+      path.relative(config.from, path.resolve(this.options.output.path, outfile))
   if (path.sep !== '/') {
     // require always uses posix separators
     relativePath = relativePath.replace('\\', '/')
