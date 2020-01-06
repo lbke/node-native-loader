@@ -14,8 +14,9 @@ aforementioned module often generates non-working require statements).
 
 ## Differences with [tec27/note-native-loader](https://github.com/tec27/node-native-loader)
 
-### Webpack 2
-This is a webpack 2 loader, so you can't define a `nodeNativeLoader` key in the webpack config anymore.
+### Webpack 4
+
+This is a webpack 4 loader, so you can't define a `nodeNativeLoader` key in the webpack config anymore.
 Instead, you can directly pass an `options` object in the loader definition:
 
 ```javascript
@@ -28,8 +29,8 @@ const config = {
         test: /\.node$/,
         loader: 'node-native',
         options:{
-          from: 'app',
-          to: './natives',
+          outputPath: path.join(__dirname, './app'),
+          nativePath: './natives',
         }
       },
     }
@@ -37,22 +38,22 @@ const config = {
 }
 ```
 
-**Note that you can't override `output.path` options, in order to avoid inconsistencies.**
-Use `from` and `to` options instead if you want the native modules to be put elsewhere.
+Loaders can't access global options anymore, but the loader needs to know the Webpack outputPath. Therefore the `outputPath` must be specified explicitly.
 
-### `from` defaults to output dir
+Use `nativePath` to put the native files in a specific folder.
 
-`config.from` now defaults to the webpack output path.
-This way the loader works as expected even when `from` is absent.
+### `from` is renamed `outputPath` and is mandatory
 
-### New option `to`
+This is more consistent with Webpack naming. `outputPath` should match the `output.path` option.
 
-The `to` options is a relative to the webpack output path.
+### New option `nativePath`
+
+The `nativePath` option is a path relative to the webpack output path.
 It allow to put the `.node` files in a specific, separate folder.
 
-**NOTE: `from` is relative **to your webpack config**, in order to be consistent with
+**NOTE: `outputPath` is relative **to your webpack config**, in order to be consistent with
 the [tec27/note-native-loader](https://github.com/tec27/node-native-loader),
- whereas `to` is relative to the **output.path** option.
+whereas `nativePath` is relative to the **output.path\*\* option.
 
 ```javascript
 const config = {
@@ -67,8 +68,9 @@ const config = {
         test: /\.node$/,
         loader: 'node-native',
         options:{
-          // .node files will be put in ${output.path}/natives folder
-          to: './natives',
+          // .node files will be put in ./app/natives folder
+          outputPath: path: path.join(__dirname, 'app'),
+          nativePath: './natives',
         }
       },
     }

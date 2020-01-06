@@ -6,28 +6,29 @@ module.exports = function process(content) {
     this.cacheable()
   }
 
-  const query = loaderUtils.getOptions(this) || {};
-
+  // default config
   const config = {
     name: "[hash].[ext]",
-    // default is the webpack output path
-    from: this.options.output.path,
+    nativePath: '.'
   };
 
+  const query = loaderUtils.getOptions(this) || {};
+
   // query takes precedence over config and options
-  Object.keys(query).forEach(function(attr) {
+  Object.keys(query).forEach(function (attr) {
     config[attr] = query[attr];
   });
 
   let outfile = loaderUtils.interpolateName(this, config.name, {
-    context: config.context || this.options.context,
+    context: config.context || this.rootContext,
     content,
   })
   outfile = outfile.replace(/[\\/]/g, '_')
-  outfile = config.to ? path.join(config.to, outfile) : outfile
+  // must be a relative path
+  outfile = config.nativePath ? path.relative(this.rootContext, path.join(config.outputPath, config.nativePath, outfile)) : outfile
   this.emitFile(outfile, content)
-  let relativePath = 
-      path.relative(config.from, path.resolve(this.options.output.path, outfile))
+  let relativePath =
+    path.relative(config.outputPath, outfile)
   if (path.sep !== '/') {
     // require always uses posix separators
     relativePath = relativePath.replace('\\', '/')
